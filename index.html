@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Digestive System Simulation — Grade 8 Science</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#2e3092; --green:#3a9a3b; --gold:#d1c66c; --ink:#373335; --muted:#6b6b70;
+  --surface:#ffffff; --surface-muted:#eeeeee; --font:Gotham, Montserrat, "Helvetica Neue", Arial, sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--font);color:var(--ink);background:var(--surface);line-height:1.5}
+header{background:var(--blue);color:#fff;border-bottom:4px solid var(--gold)}
+.hwrap{max-width:1200px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-weight:700;letter-spacing:.06em;font-size:13px;text-transform:uppercase;display:flex;align-items:center;gap:12px}
+.brand .rule{width:1px;height:22px;background:#fff;opacity:.7}
+h1{margin:0;font-size:22px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;flex:1 1 100%}
+nav{background:var(--surface-muted);border-bottom:1px solid #ddd;position:sticky;top:0;z-index:5}
+.nwrap{max-width:1200px;margin:0 auto;display:flex;gap:4px;padding:0 12px;overflow-x:auto}
+nav button{font:600 14px var(--font);border:0;background:none;padding:14px 14px;cursor:pointer;color:var(--ink);border-bottom:4px solid transparent;white-space:nowrap}
+nav button[aria-selected="true"]{color:var(--blue);border-bottom-color:var(--green)}
+nav button:focus-visible,button:focus-visible,.organ:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+main{max-width:1200px;margin:0 auto;padding:24px 20px 60px}
+section.tab{display:none} section.tab.active{display:block}
+h2{color:var(--blue);font-size:22px;margin:0 0 12px;font-weight:800;text-transform:uppercase;letter-spacing:.02em}
+h3{color:var(--blue);font-size:17px;margin:20px 0 8px}
+.card{border:1px solid #ddd;border-radius:4px;padding:16px 18px;background:#fff}
+.lt{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.lt .card{border-left:6px solid var(--green)}
+.lt .card.eq{border-left-color:var(--gold)}
+.tag{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0 16px}
+th{background:var(--blue);color:#fff;text-align:left;padding:8px 10px;font-weight:700}
+td{border-bottom:1px solid #e3e3e3;padding:8px 10px;vertical-align:top}
+tr:nth-child(even) td{background:#f7f7f7}
+.note{background:#f6f4e2;border-left:4px solid var(--gold);padding:10px 14px;font-size:14px;margin:12px 0;border-radius:2px}
+.btn{font:700 14px var(--font);background:var(--blue);color:#fff;border:0;border-radius:2px;padding:10px 16px;cursor:pointer}
+.btn.secondary{background:#fff;color:var(--blue);border:2px solid var(--blue);padding:8px 14px}
+.btn.green{background:var(--green)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.split{display:grid;grid-template-columns:minmax(300px,460px) 1fr;gap:24px;align-items:start}
+.diagram{background:#fbfbfd;border:1px solid #ddd;border-radius:4px;padding:8px}
+.diagram svg{width:100%;height:auto;display:block}
+.organ{cursor:pointer;transition:opacity .2s, filter .2s}
+.organ:focus:not(:focus-visible){outline:none}
+.organ:hover{filter:brightness(1.12)}
+svg.dim .organ{opacity:.28}
+svg.dim .organ.hl{opacity:1}
+.organ.sel path,.organ.sel ellipse,.organ.sel circle{stroke:var(--gold)!important}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.chip{font-size:12px;font-weight:700;padding:4px 10px;border-radius:2px;background:var(--surface-muted);color:var(--ink)}
+.chip.p{background:#e6e7f5;color:var(--blue)}
+.chip.e{background:#e2f1e2;color:#256b26}
+.chip.s{background:#f4efcc;color:#5d5418}
+.stage-dots{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.stage-dots button{font:600 12px var(--font);border:2px solid var(--blue);background:#fff;color:var(--blue);padding:5px 9px;border-radius:2px;cursor:pointer}
+.stage-dots button.on{background:var(--blue);color:#fff}
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.nut{display:grid;grid-template-columns:110px 1fr;gap:4px 10px;align-items:center;margin-top:8px}
+.nut .lbl{font-weight:700;font-size:13px}
+.nut .cap{grid-column:2;font-size:12.5px;color:var(--muted);margin-top:-4px;margin-bottom:6px}
+.story{background:#eef6ee;border-left:4px solid var(--green);padding:10px 14px;font-size:14px;margin:10px 0;border-radius:2px}
+.meta{font-size:13px;color:var(--muted)}
+.lab{display:grid;grid-template-columns:minmax(260px,340px) 1fr;gap:24px;align-items:start}
+.field{margin-bottom:14px}
+.field label{display:block;font-weight:700;font-size:13px;margin-bottom:4px}
+select,input[type=range]{width:100%}
+select{font:500 14px var(--font);padding:8px;border:1px solid #bbb;border-radius:2px;background:#fff}
+.phscale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+canvas{width:100%;height:auto;border:1px solid #ddd;border-radius:4px;background:#f3f8fc;display:block}
+.meter{height:16px;background:#e6e6e6;border-radius:2px;overflow:hidden;margin:6px 0}
+.meter > div{height:100%;background:var(--green);width:0;transition:width .3s}
+.result{border-radius:4px;padding:12px 14px;margin-top:12px;font-size:14px;border:1px solid #ddd}
+.result.ok{border-left:6px solid var(--green)}
+.result.bad{border-left:6px solid #b3261e}
+.result.mid{border-left:6px solid var(--gold)}
+.q{margin-bottom:18px}
+.q .opts{display:grid;gap:6px;margin-top:8px}
+.q .opts button{text-align:left;font:500 14px var(--font);padding:10px 12px;border:1px solid #bbb;background:#fff;border-radius:2px;cursor:pointer;color:var(--ink)}
+.q .opts button.right{border-color:var(--green);background:#e2f1e2}
+.q .opts button.wrong{border-color:#b3261e;background:#fbe6e4}
+.fb{font-size:13.5px;margin-top:6px}
+.score{font-size:18px;font-weight:800;color:var(--blue)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:6px}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;margin-right:5px;border-radius:50%;background:var(--c);vertical-align:-1px}
+footer{max-width:1200px;margin:0 auto;padding:0 20px 30px;font-size:12px;color:var(--muted)}
+@media (max-width:820px){.lt,.split,.lab{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <div class="brand">PAREF Southridge <span class="rule"></span> Grade 8 Science</div>
+    <h1>The Digestive System: Simulation</h1>
+  </div>
+</header>
+<nav><div class="nwrap" role="tablist">
+  <button role="tab" data-tab="overview">Overview</button>
+  <button role="tab" data-tab="journey">1 · Food Journey</button>
+  <button role="tab" data-tab="explorer">2 · Organ Explorer</button>
+  <button role="tab" data-tab="enzymes">3 · Enzyme Lab</button>
+  <button role="tab" data-tab="quiz">4 · Quick Check</button>
+  <button role="tab" data-tab="references">References</button>
+</div></nav>
+
+<main>
+<!-- OVERVIEW -->
+<section class="tab" id="overview">
+  <div class="lt">
+    <div class="card"><div class="tag">Learning target</div>
+      <strong>I can trace the path of food through the digestive system and explain how each organ, process, and enzyme helps turn food into nutrients my body can absorb and use.</strong></div>
+    <div class="card eq"><div class="tag">Essential question</div>
+      <strong>How does a plate of rice and chicken adobo become the energy and building materials my cells need?</strong></div>
+  </div>
+
+  <h2>How to use this simulation</h2>
+  <table>
+    <tr><th>Part</th><th>What you do</th><th>What you should be able to explain</th></tr>
+    <tr><td><strong>1 · Food Journey</strong></td><td>Follow Juan's lunch (rice, chicken adobo, a glass of milk) from mouth to anus, one stage at a time.</td><td>The order of organs, what process happens where, and how carbohydrates, proteins, and fats are broken down.</td></tr>
+    <tr><td><strong>2 · Organ Explorer</strong></td><td>Click any organ on the diagram.</td><td>The function of each organ, and the difference between the alimentary canal and accessory organs.</td></tr>
+    <tr><td><strong>3 · Enzyme Lab</strong></td><td>Mix an enzyme with a food molecule; change the pH, temperature, and bile.</td><td>Why enzymes are specific, and why each works best in a certain part of the body.</td></tr>
+    <tr><td><strong>4 · Quick Check</strong></td><td>Answer 12 questions and get instant feedback.</td><td>Check your own understanding. Scores are not saved.</td></tr>
+  </table>
+
+  <h2>The processes of digestion</h2>
+  <table>
+    <tr><th>Process</th><th>What it means</th><th>Where it mainly happens</th></tr>
+    <tr><td><strong>Ingestion</strong></td><td>Taking food into the body</td><td>Mouth</td></tr>
+    <tr><td><strong>Mechanical digestion</strong></td><td>Physically breaking food into smaller pieces without changing the molecules (chewing, churning, emulsifying fat with bile)</td><td>Mouth, stomach, small intestine</td></tr>
+    <tr><td><strong>Propulsion</strong></td><td>Moving food along: swallowing, then <em>peristalsis</em> (waves of muscle contraction)</td><td>Pharynx, esophagus, stomach, intestines</td></tr>
+    <tr><td><strong>Chemical digestion</strong></td><td>Enzymes break large molecules into small ones (starch → glucose, protein → amino acids, fat → fatty acids + glycerol)</td><td>Mouth, stomach, small intestine</td></tr>
+    <tr><td><strong>Absorption</strong></td><td>Small nutrient molecules pass through the intestine wall into the blood or lymph</td><td>Small intestine (nutrients); large intestine (water, minerals)</td></tr>
+    <tr><td><strong>Assimilation</strong></td><td>Body cells take in and use the absorbed nutrients for energy, growth, and repair</td><td>Cells all over the body</td></tr>
+    <tr><td><strong>Egestion (elimination)</strong></td><td>Removing undigested material as feces</td><td>Rectum and anus</td></tr>
+  </table>
+  <p class="meta">Aligned with the DepEd Grade 8 Science competency: "Explain ingestion, absorption, assimilation, and excretion" (S8LT-IVa-13). See the References tab for sources.</p>
+  <div class="note"><strong>Word check:</strong> Some textbooks call the removal of feces "excretion." Strictly, <em>excretion</em> means removing wastes made by cells (like urea or carbon dioxide). Feces are mostly food that was never absorbed, so scientists call its removal <em>egestion</em> or <em>elimination</em>.</div>
+
+  <h2>Mechanical vs. chemical digestion</h2>
+  <table>
+    <tr><th></th><th>Mechanical digestion</th><th>Chemical digestion</th></tr>
+    <tr><td><strong>What changes</strong></td><td>Size of food pieces only</td><td>The molecules themselves</td></tr>
+    <tr><td><strong>How</strong></td><td>Teeth, tongue, stomach muscles, bile</td><td>Enzymes (helped by stomach acid)</td></tr>
+    <tr><td><strong>Why it matters</strong></td><td>More surface area for enzymes to work on</td><td>Makes molecules small enough to be absorbed</td></tr>
+    <tr><td><strong>Example</strong></td><td>Molars grinding rice</td><td>Salivary amylase turning starch into maltose</td></tr>
+  </table>
+</section>
+
+<!-- JOURNEY -->
+<section class="tab" id="journey">
+  <h2>Food Journey: Juan's lunch</h2>
+  <div class="story">It is lunch break at school. Juan eats a cup of <strong>rice</strong> (starch), <strong>chicken adobo</strong> (protein and fat), and drinks a glass of <strong>milk</strong> (contains lactose, a milk sugar). Follow his lunch through the digestive tract.</div>
+  <div class="split">
+    <div class="diagram" id="jDiagram"></div>
+    <div>
+      <div class="controls">
+        <button class="btn secondary" id="jPrev">◀ Previous</button>
+        <button class="btn" id="jPlay">▶ Play all</button>
+        <button class="btn secondary" id="jNext">Next ▶</button>
+      </div>
+      <div class="stage-dots" id="jDots"></div>
+      <div class="card" id="jCard"></div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPLORER -->
+<section class="tab" id="explorer">
+  <h2>Organ Explorer</h2>
+  <p>Click an organ (or press Tab, then Enter) to see what it does. Organs food passes <em>through</em> form the <strong>alimentary canal</strong>; <strong>accessory organs</strong> help digestion but food never passes through them.</p>
+  <div class="controls" style="margin-bottom:10px">
+    <button class="btn secondary" id="eLabels">Show labels</button>
+    <button class="btn secondary" data-filter="canal">Highlight alimentary canal</button>
+    <button class="btn secondary" data-filter="accessory">Highlight accessory organs</button>
+    <button class="btn secondary" data-filter="none">Clear highlight</button>
+  </div>
+  <div class="split">
+    <div class="diagram" id="eDiagram"></div>
+    <div class="card" id="eCard"><p class="meta">Select an organ on the diagram.</p></div>
+  </div>
+</section>
+
+<!-- ENZYMES -->
+<section class="tab" id="enzymes">
+  <h2>Enzyme Lab</h2>
+  <p>Enzymes are proteins that speed up the breakdown of food molecules. Set up a test tube, then press <strong>Run reaction</strong>. Try to find the best conditions for each enzyme.</p>
+  <div class="lab">
+    <div class="card">
+      <div class="field"><label for="lSub">Food molecule (substrate)</label><select id="lSub"></select></div>
+      <div class="field"><label for="lEnz">Enzyme</label><select id="lEnz"></select></div>
+      <div class="field"><label for="lPh">pH: <span id="lPhV"></span></label>
+        <input type="range" id="lPh" min="1" max="10" step="0.5" value="7">
+        <div class="phscale"><span>1 (acidic)</span><span>7 (neutral)</span><span>10 (basic)</span></div><div class="meta" style="font-size:12px">Stomach ≈ 2 · Mouth ≈ 7 · Small intestine ≈ 7–8</div>
+      </div>
+      <div class="field"><label for="lT">Temperature: <span id="lTV"></span></label>
+        <input type="range" id="lT" min="0" max="80" step="1" value="37">
+        <div class="phscale"><span>0 °C</span><span>body 37 °C</span><span>80 °C</span></div>
+      </div>
+      <div class="field"><label><input type="checkbox" id="lBile"> Add bile (emulsifies fat)</label></div>
+      <div class="controls">
+        <button class="btn green" id="lRun">Run reaction</button>
+        <button class="btn secondary" id="lReset">Reset</button>
+      </div>
+      <h3>Presets</h3>
+      <div class="controls" id="lPresets"></div>
+    </div>
+    <div>
+      <canvas id="lCanvas" width="720" height="320" aria-label="Test tube simulation"></canvas>
+      <div class="legend"><span style="--c:#e07b39">Substrate (whole molecule)</span><span style="--c:#3a9a3b">Product (broken down)</span><span style="--c:#2e3092">Enzyme</span></div>
+      <div style="margin-top:10px"><strong>Reaction rate:</strong> <span id="lRateV">—</span><div class="meter"><div id="lRate"></div></div>
+      <strong>Substrate broken down:</strong> <span id="lProgV">0%</span><div class="meter"><div id="lProg" style="background:var(--blue)"></div></div></div>
+      <div class="result" id="lResult">Choose a substrate and an enzyme, then run the reaction.</div>
+    </div>
+  </div>
+
+  <h2 style="margin-top:28px">Enzyme summary</h2>
+  <table>
+    <tr><th>Enzyme</th><th>Made by</th><th>Works in</th><th>Breaks down → into</th><th>Best pH (approx.)</th></tr>
+    <tr><td><strong>Salivary amylase</strong></td><td>Salivary glands</td><td>Mouth</td><td>Starch → maltose (and shorter starch chains)</td><td>≈ 6.8–7</td></tr>
+    <tr><td><strong>Pepsin</strong></td><td>Stomach lining (released as inactive <em>pepsinogen</em>, activated by stomach acid)</td><td>Stomach</td><td>Proteins → polypeptides (shorter chains)</td><td>≈ 1.5–2</td></tr>
+    <tr><td><strong>Pancreatic amylase</strong></td><td>Pancreas</td><td>Small intestine</td><td>Starch → maltose</td><td>≈ 7–8</td></tr>
+    <tr><td><strong>Trypsin</strong></td><td>Pancreas (released as inactive <em>trypsinogen</em>)</td><td>Small intestine</td><td>Proteins and polypeptides → peptides</td><td>≈ 8</td></tr>
+    <tr><td><strong>Pancreatic lipase</strong></td><td>Pancreas</td><td>Small intestine</td><td>Fats → fatty acids + glycerol*</td><td>≈ 8 (works far better with bile)</td></tr>
+    <tr><td><strong>Peptidases</strong></td><td>Small intestine lining (and pancreas)</td><td>Small intestine</td><td>Peptides → amino acids</td><td>≈ 7–8</td></tr>
+    <tr><td><strong>Maltase</strong></td><td>Small intestine lining</td><td>Small intestine</td><td>Maltose → glucose + glucose</td><td>≈ 6–7†</td></tr>
+    <tr><td><strong>Sucrase</strong></td><td>Small intestine lining</td><td>Small intestine</td><td>Sucrose → glucose + fructose</td><td>≈ 5–7†</td></tr>
+    <tr><td><strong>Lactase</strong></td><td>Small intestine lining</td><td>Small intestine</td><td>Lactose → glucose + galactose</td><td>≈ 5.5–6†</td></tr>
+  </table>
+  <div class="note"><strong>Bile is not an enzyme.</strong> It is made by the liver and stored in the gallbladder. It does not change fat molecules; it breaks big fat droplets into tiny ones (emulsification), which gives lipase more surface to work on.<br>
+  * Strictly, lipase often leaves one fatty acid still attached to glycerol (a monoglyceride). Grade 8 texts simplify this to "fatty acids and glycerol."<br>
+  <strong>Other fat enzymes:</strong> small amounts of lipase from the tongue (lingual lipase) and stomach (gastric lipase) start fat digestion early, but pancreatic lipase does most of the work.<br>
+  pH values are approximate and differ between sources; † values for brush-border enzymes vary the most.<br>
+  <strong>About this lab:</strong> it is a simplified model. Reaction rates are illustrative, not measured data.</div>
+</section>
+
+<!-- QUIZ -->
+<section class="tab" id="quiz">
+  <h2>Quick Check</h2>
+  <p>Pick an answer for each question. You'll see right away whether it is correct and why. Your score is not saved or sent anywhere.</p>
+  <div id="qList"></div>
+  <div class="card" id="qScore" style="display:none"></div>
+</section>
+<section class="tab" id="references">
+  <h2>References</h2>
+  <p>Facts in this simulation were checked against the sources below (accessed November 2026). Numbers such as lengths, times, and pH values are typical ranges for healthy adults; they vary between people and between sources.</p>
+  <h3>Curriculum</h3>
+  <ol start="1" style="font-size:14px;padding-left:22px">
+    <li style="margin-bottom:8px">Department of Education. <em>Science 8 – Unit 4 Module 3: The Digestive System</em> (Learner's Module). LRMDS. <a href="https://lrmds.deped.gov.ph/detail/4162" target="_blank" rel="noopener">https://lrmds.deped.gov.ph/detail/4162</a><br><span class="meta">Used for: Grade 8 scope; competency S8LT-IVa-13</span></li>
+  </ol>
+  <h3>Overview of the digestive system</h3>
+  <ol start="2" style="font-size:14px;padding-left:22px">
+    <li style="margin-bottom:8px">National Institute of Diabetes and Digestive and Kidney Diseases (NIDDK). <em>Your Digestive System &amp; How It Works.</em> <a href="https://www.niddk.nih.gov/health-information/digestive-diseases/digestive-system-how-it-works" target="_blank" rel="noopener">https://www.niddk.nih.gov/health-information/digestive-diseases/digestive-system-how-it-works</a><br><span class="meta">Used for: Organs of the GI tract; liver, pancreas, gallbladder as solid (accessory) organs</span></li>
+  </ol>
+  <h3>Mouth, salivary glands, teeth</h3>
+  <ol start="3" style="font-size:14px;padding-left:22px">
+    <li style="margin-bottom:8px">StatPearls. <em>Histology, Salivary Glands.</em> NCBI Bookshelf. <a href="https://www.ncbi.nlm.nih.gov/books/NBK551688/" target="_blank" rel="noopener">https://www.ncbi.nlm.nih.gov/books/NBK551688/</a><br><span class="meta">Used for: Three pairs of major glands, 600–1000 minor glands; salivary amylase</span></li>
+    <li style="margin-bottom:8px">Hernández LM, Taylor MK. <em>Salivary Gland Anatomy and Physiology.</em> Springer, 2020. <a href="https://doi.org/10.1007/978-3-030-35784-9_2" target="_blank" rel="noopener">https://doi.org/10.1007/978-3-030-35784-9_2</a><br><span class="meta">Used for: Saliva output ≈ 0.5–1.5 L/day</span></li>
+    <li style="margin-bottom:8px">Cleveland Clinic. <em>Teeth: Anatomy, Types &amp; Function.</em> <a href="https://my.clevelandclinic.org/health/body/24655-teeth" target="_blank" rel="noopener">https://my.clevelandclinic.org/health/body/24655-teeth</a><br><span class="meta">Used for: 32 permanent teeth; incisors, canines, premolars, molars</span></li>
+  </ol>
+  <h3>Esophagus and swallowing</h3>
+  <ol start="6" style="font-size:14px;padding-left:22px">
+    <li style="margin-bottom:8px">Chaudhry S, Bordoni B. <em>Anatomy, Thorax, Esophagus.</em> StatPearls. <a href="https://www.ncbi.nlm.nih.gov/books/NBK482513/" target="_blank" rel="noopener">https://www.ncbi.nlm.nih.gov/books/NBK482513/</a><br><span class="meta">Used for: Esophagus ≈ 23–25 cm; sphincters</span></li>
+    <li style="margin-bottom:8px">ScienceABC (citing Sherwood, <em>Human Physiology</em>, 2016). <em>Does being upside down affect the stomach's contents?</em> <a href="https://www.scienceabc.com/humans/when-were-upside-down-does-it-have-any-effect-on-the-stomachs-contents.html" target="_blank" rel="noopener">https://www.scienceabc.com/humans/when-were-upside-down-does-it-have-any-effect-on-the-stomachs-contents.html</a><br><span class="meta">Used for: Peristalsis moves a bolus in about 5–9 s and works without gravity</span></li>
+  </ol>
+  <h3>Stomach and pepsin</h3>
+  <ol start="8" style="font-size:14px;padding-left:22px">
+    <li style="margin-bottom:8px">Hsu M, Safadi AO, Lui F. <em>Physiology, Stomach.</em> StatPearls. <a href="https://www.ncbi.nlm.nih.gov/books/NBK535425/" target="_blank" rel="noopener">https://www.ncbi.nlm.nih.gov/books/NBK535425/</a><br><span class="meta">Used for: HCl from parietal cells, mucus barrier, pepsinogen → pepsin, pyloric sphincter, chyme</span></li>
+    <li style="margin-bottom:8px">Heda R, Toro F, Tombazzi CR. <em>Physiology, Pepsin.</em> StatPearls. <a href="https://www.ncbi.nlm.nih.gov/books/NBK537005/" target="_blank" rel="noopener">https://www.ncbi.nlm.nih.gov/books/NBK537005/</a><br><span class="meta">Used for: Pepsin works best at pH ≈ 1.5–2; released as a zymogen</span></li>
+  </ol>
+  <h3>Carbohydrate digestion</h3>
+  <ol start="10" style="font-size:14px;padding-left:22px">
+    <li style="margin-bottom:8px">California State University. <em>Nutrition and Fitness</em>, 5.5 Carbohydrate Digestion and Absorption. <a href="https://pressbooks.calstate.edu/nutritionandfitness/?p=115" target="_blank" rel="noopener">https://pressbooks.calstate.edu/nutritionandfitness/?p=115</a><br><span class="meta">Used for: Salivary amylase → dextrins and maltose; stops in stomach acid; maltase, sucrase, lactase; liver stores glucose as glycogen</span></li>
+  </ol>
+  <h3>Fat digestion, bile, gallbladder</h3>
+  <ol start="11" style="font-size:14px;padding-left:22px">
+    <li style="margin-bottom:8px">LibreTexts Chemistry. <em>Digestion of Triacylglycerols.</em> <a href="https://chem.libretexts.org/Courses/Saint_Francis_University/Chem_114%3A_Human_Chemistry_II_(Muino)/24%3A_Lipid_Metabolism/24.01%3A_Digestion_of_Triacylglycerols" target="_blank" rel="noopener">https://chem.libretexts.org/Courses/Saint_Francis_University/Chem_114%3A_Human_Chemistry_II_(Muino)/24%3A_Lipid_Metabolism/24.01%3A_Digestion_of_Triacylglycerols</a><br><span class="meta">Used for: Fat products enter lacteals (lymph)</span></li>
+    <li style="margin-bottom:8px">Cleveland Clinic. <em>Can You Live Without a Gallbladder?</em> (2024) <a href="https://health.clevelandclinic.org/can-you-live-without-a-gallbladder" target="_blank" rel="noopener">https://health.clevelandclinic.org/can-you-live-without-a-gallbladder</a><br><span class="meta">Used for: Liver makes bile; gallbladder stores it; without it, bile flows straight into the small intestine</span></li>
+  </ol>
+  <h3>Small and large intestine</h3>
+  <ol start="13" style="font-size:14px;padding-left:22px">
+    <li style="margin-bottom:8px">StatPearls. <em>Physiology, Small Bowel</em> (NBK532263). <a href="https://www.ncbi.nlm.nih.gov/books/NBK532263/" target="_blank" rel="noopener">https://www.ncbi.nlm.nih.gov/books/NBK532263/</a><br><span class="meta">Used for: Duodenum, jejunum, ileum; ≈ 95% of carbohydrates and proteins absorbed</span></li>
+    <li style="margin-bottom:8px">National Cancer Institute SEER Training. <em>Anatomy of the Small Intestine.</em> <a href="https://training.seer.cancer.gov/ugi/anatomy/intestine.html" target="_blank" rel="noopener">https://training.seer.cancer.gov/ugi/anatomy/intestine.html</a><br><span class="meta">Used for: Small intestine ≈ 600 cm; duodenum ≈ 25 cm</span></li>
+    <li style="margin-bottom:8px">StatPearls. <em>Physiology, Large Intestine</em> (NBK507857). <a href="https://www.ncbi.nlm.nih.gov/books/NBK507857/" target="_blank" rel="noopener">https://www.ncbi.nlm.nih.gov/books/NBK507857/</a><br><span class="meta">Used for: Water and electrolyte absorption; bacteria make vitamin K and B vitamins; ≈ 1.5 m (5 ft)</span></li>
+    <li style="margin-bottom:8px">Radiopaedia. <em>Faeces.</em> <a href="https://radiopaedia.org/articles/faeces" target="_blank" rel="noopener">https://radiopaedia.org/articles/faeces</a><br><span class="meta">Used for: Feces ≈ 75% water; about half of dry mass is bacteria</span></li>
+    <li style="margin-bottom:8px">NPR. <em>The appendix plays a hidden role in gut health</em> (2024). <a href="https://www.npr.org/sections/health-shots/2024/02/02/1228474984/appendix-function-appendicitis-gut-health" target="_blank" rel="noopener">https://www.npr.org/sections/health-shots/2024/02/02/1228474984/appendix-function-appendicitis-gut-health</a><br><span class="meta">Used for: Appendix: immune tissue; 'safe house' hypothesis for gut bacteria</span></li>
+  </ol>
+  <h3>Transit times</h3>
+  <ol start="18" style="font-size:14px;padding-left:22px">
+    <li style="margin-bottom:8px">Lee YY, Erdogan A, Rao SSC. How to assess regional and whole gut transit time with wireless motility capsule. <em>J Neurogastroenterol Motil.</em> 2014;20(2):265–270. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4015195/" target="_blank" rel="noopener">https://pmc.ncbi.nlm.nih.gov/articles/PMC4015195/</a><br><span class="meta">Used for: Normal ranges: stomach 2–5 h, small intestine 2–6 h, colon 10–59 h, whole gut 10–73 h</span></li>
+  </ol>
+  <div class="note"><strong>Simplifications for Grade 8:</strong> (1) Lipase products are given as "fatty acids + glycerol"; strictly, lipase often leaves monoglycerides. (2) Removal of feces is called "egestion"; DepEd materials often use "excretion." (3) Salivary amylase is shown making maltose; it also makes shorter starch chains (dextrins). (4) The Enzyme Lab uses a simplified rate model.</div>
+</section>
+</main>
+<footer>Grade 8 Science · Digestive System simulation. Times and sizes shown are typical approximations for a healthy adult; they vary from person to person.</footer>
+
+<script>
+/* ---------------- ORGAN DATA ---------------- */
+const ORGANS = {
+  mouth:{name:"Mouth (oral cavity)",type:"canal",
+    func:"Where food enters the body. Teeth cut and grind food, the tongue mixes it with saliva and shapes it into a soft ball called a bolus.",
+    proc:["Ingestion","Mechanical digestion","Chemical digestion"],enz:["Salivary amylase (from saliva)"],
+    fact:"Adults have 32 permanent teeth: incisors cut, canines tear, premolars and molars grind."},
+  salivary:{name:"Salivary glands",type:"accessory",
+    func:"Three pairs of major glands (parotid, submandibular, sublingual), plus hundreds of tiny minor glands, release saliva into the mouth. Saliva moistens food, makes it easier to swallow, and starts starch digestion.",
+    proc:["Chemical digestion (secretes enzyme)"],enz:["Salivary amylase"],
+    fact:"Adults make roughly 0.5–1.5 liters of saliva a day. Its mucus makes the bolus slippery."},
+  pharynx:{name:"Pharynx (throat)",type:"canal",
+    func:"A passage shared by food and air. During swallowing, a flap called the epiglottis covers the windpipe so food goes into the esophagus.",
+    proc:["Propulsion (swallowing)"],enz:["None"],
+    fact:"Swallowing starts voluntarily, then becomes an automatic reflex."},
+  esophagus:{name:"Esophagus (food pipe)",type:"canal",
+    func:"A muscular tube about 23–25 cm long in adults that carries the bolus from the pharynx to the stomach by peristalsis.",
+    proc:["Propulsion (peristalsis)"],enz:["None of its own (salivary amylase keeps working inside the bolus)"],
+    fact:"Swallowing does not depend on gravity: peristalsis pushes food to the stomach even if you are upside down."},
+  stomach:{name:"Stomach",type:"canal",
+    func:"A J-shaped muscular bag that stores food, churns it, and mixes it with gastric juice. Food becomes a thick liquid called chyme. Hydrochloric acid (pH about 1.5–3.5) helps kill microbes and activates pepsin; a thick layer of mucus protects the stomach wall.",
+    proc:["Mechanical digestion (churning)","Chemical digestion"],enz:["Pepsin (proteins → polypeptides)","Gastric lipase (a small amount of fat digestion)","Hydrochloric acid (not an enzyme)"],
+    fact:"In healthy adults the stomach usually empties in about 2–5 hours. The pyloric sphincter lets chyme into the small intestine a little at a time."},
+  liver:{name:"Liver",type:"accessory",
+    func:"The largest internal organ. For digestion, it makes bile. It also receives absorbed nutrients from the intestine, stores glucose as glycogen, and removes harmful substances from the blood.",
+    proc:["Mechanical digestion (bile emulsifies fat)"],enz:["Bile (not an enzyme)"],
+    fact:"Food never passes through the liver; bile reaches the small intestine through ducts."},
+  gallbladder:{name:"Gallbladder",type:"accessory",
+    func:"A small sac under the liver that stores and concentrates bile, then squeezes it into the duodenum when fatty food arrives.",
+    proc:["Stores and releases bile"],enz:["Bile (not an enzyme)"],
+    fact:"People can live normally without a gallbladder; bile then flows straight from the liver into the small intestine."},
+  pancreas:{name:"Pancreas",type:"accessory",
+    func:"Releases pancreatic juice into the duodenum. It has enzymes for all three main nutrients, plus bicarbonate that neutralizes stomach acid so intestinal enzymes can work.",
+    proc:["Chemical digestion (secretes enzymes)"],enz:["Pancreatic amylase","Trypsin","Pancreatic lipase"],
+    fact:"The pancreas also makes the hormones insulin and glucagon, which control blood sugar."},
+  smallint:{name:"Small intestine",type:"canal",
+    func:"The main site of chemical digestion and absorption. It has three parts: duodenum, jejunum, and ileum. Its inner wall is covered with finger-like villi (and tinier microvilli) that give a huge surface for absorbing nutrients into the blood and lymph.",
+    proc:["Chemical digestion","Mechanical digestion (bile)","Absorption","Propulsion"],enz:["Enzymes from pancreas","Maltase, sucrase, lactase","Peptidases"],
+    fact:"It is several meters long (often given as about 6 m; measurements range from about 3 to 7 m) and absorbs about 95% of carbohydrates and proteins. It is called 'small' because it is narrower than the large intestine."},
+  largeint:{name:"Large intestine",type:"canal",
+    func:"Absorbs water and minerals from what is left, turning it into semi-solid feces. Helpful bacteria here ferment some fiber and make vitamin K and some B vitamins, which are then absorbed.",
+    proc:["Absorption (water, minerals)","Propulsion","Forms feces"],enz:["No major digestive enzymes (bacteria do some work)"],
+    fact:"Parts: cecum, colon (ascending, transverse, descending, sigmoid), rectum. It is roughly 1.5 m long."},
+  appendix:{name:"Appendix",type:"canal",tag:"Part of the large intestine (a dead-end pouch; food does not pass through it)",
+    func:"A small, dead-end pouch attached to the cecum. It does not digest food. It contains immune tissue, and scientists think it may act as a 'safe house' for helpful gut bacteria, but this is still being studied.",
+    proc:["No digestive role"],enz:["None"],
+    fact:"An infected, swollen appendix (appendicitis) is a medical emergency."},
+  rectum:{name:"Rectum",type:"canal",
+    func:"The last part of the large intestine. It stores feces until the body is ready to eliminate them.",
+    proc:["Storage of feces"],enz:["None"],fact:"When the rectum stretches, nerves send the signal that you need to go to the toilet."},
+  anus:{name:"Anus",type:"canal",
+    func:"The opening at the end of the alimentary canal. Ring-shaped muscles (sphincters) control when feces leave the body.",
+    proc:["Egestion (elimination)"],enz:["None"],fact:"Feces are about 75% water. Roughly half of the solid part is gut bacteria; the rest includes undigested fiber, shed cells, and mucus."}
+};
+
+/* ---------------- SVG DIAGRAM ---------------- */
+const LABELS = [
+  ["mouth","Mouth",190,95,-50,90,"L"],["salivary","Salivary glands",234,102,345,92,"R"],
+  ["pharynx","Pharynx",207,122,345,125,"R"],["esophagus","Esophagus",204,185,345,180,"R"],
+  ["liver","Liver",140,258,-50,245,"L"],["gallbladder","Gallbladder",163,306,-50,300,"L"],
+  ["stomach","Stomach",288,282,345,265,"R"],["pancreas","Pancreas",282,338,345,322,"R"],
+  ["smallint","Small intestine",160,425,-50,430,"L"],["largeint","Large intestine",290,430,345,430,"R"],
+  ["appendix","Appendix",121,508,-50,510,"L"],["rectum","Rectum",213,522,345,525,"R"],["anus","Anus",200,550,-50,555,"L"]
+];
+const STAGE_PATHS = [
+  "M195,95 L205,95",
+  "M200,100 L200,135 C200,170 205,210 212,250",
+  "M212,252 C240,255 275,265 272,295 C268,320 235,328 200,322",
+  "M196,320 C178,326 172,345 182,362 C190,375 210,380 230,378",
+  "M230,378 C262,378 265,395 245,397 L165,397 C145,397 145,417 165,417 L245,417 C265,417 265,437 245,437 L165,437 C145,437 145,457 165,457 L245,457 C265,457 262,478 240,478 L140,482",
+  "M140,482 L128,480 L128,378 C128,368 136,365 146,365 L272,365 C282,365 290,372 290,382 L290,478 C290,498 270,505 245,505 L205,505",
+  "M205,505 L205,548"
+];
+function diagramSVG(prefix){
+  const SI = "M196,320 C178,326 172,345 182,362 C190,375 210,380 230,378 C262,378 265,395 245,397 L165,397 C145,397 145,417 165,417 L245,417 C265,417 265,437 245,437 L165,437 C145,437 145,457 165,457 L245,457 C265,457 262,478 240,478 L140,482";
+  const LI = "M128,492 L128,378 C128,368 136,365 146,365 L272,365 C282,365 290,372 290,382 L290,478 C290,498 270,505 245,505 L205,505";
+  const lab = LABELS.map(([id,t,ax,ay,lx,ly,s])=>{
+    const tx = s==="L"? lx : lx; const anchor = s==="L"?"start":"start";
+    const lineEnd = s==="L"? lx+ (t.length*7.2)+4 : lx-4;
+    return `<g class="lbl" data-for="${id}"><line x1="${ax}" y1="${ay}" x2="${lineEnd}" y2="${ly-4}" stroke="#2e3092" stroke-width="1"/><circle cx="${ax}" cy="${ay}" r="2.5" fill="#2e3092"/><text x="${tx}" y="${ly}" font-size="12.5" font-weight="700" fill="#2e3092" text-anchor="${anchor}" font-family="Montserrat, Arial">${t}</text></g>`;
+  }).join("");
+  return `<svg viewBox="-60 0 520 590" xmlns="http://www.w3.org/2000/svg" id="${prefix}Svg" role="img" aria-label="Diagram of the human digestive system">
+  <defs><filter id="${prefix}sh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-opacity=".25"/></filter></defs>
+  <!-- body -->
+  <circle cx="200" cy="62" r="48" fill="#f6e3d3" stroke="#c9a88f" stroke-width="2"/>
+  <rect x="180" y="106" width="40" height="40" fill="#f6e3d3"/>
+  <path d="M150,140 L250,140 C290,145 315,170 318,210 L322,520 C322,560 280,575 205,575 C130,575 88,560 88,520 L92,210 C95,170 115,145 150,140 Z" fill="#f6e3d3" stroke="#c9a88f" stroke-width="2"/>
+  <circle cx="183" cy="52" r="4" fill="#5a4a40"/><circle cx="217" cy="52" r="4" fill="#5a4a40"/>
+  <!-- large intestine -->
+  <g class="organ" data-organ="largeint" tabindex="0" role="button" aria-label="Large intestine"><path d="${LI}" fill="none" stroke="#c98f63" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><path d="${LI}" fill="none" stroke="#b07a52" stroke-width="22" stroke-dasharray="2 16" stroke-linejoin="round" opacity=".5"/></g>
+  <g class="organ" data-organ="appendix" tabindex="0" role="button" aria-label="Appendix"><path d="M126,496 C120,506 116,512 122,516" fill="none" stroke="#c98f63" stroke-width="7" stroke-linecap="round"/></g>
+  <g class="organ" data-organ="rectum" tabindex="0" role="button" aria-label="Rectum"><path d="M205,505 L205,538" fill="none" stroke="#b9805a" stroke-width="18" stroke-linecap="round"/></g>
+  <g class="organ" data-organ="anus" tabindex="0" role="button" aria-label="Anus"><ellipse cx="205" cy="547" rx="9" ry="5" fill="#7d4f33" stroke="#5c3a25" stroke-width="1.5"/></g>
+  <!-- small intestine -->
+  <g class="organ" data-organ="smallint" tabindex="0" role="button" aria-label="Small intestine"><path d="${SI}" fill="none" stroke="#e9a395" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/><path d="${SI}" fill="none" stroke="#f7c6bb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <!-- pancreas -->
+  <g class="organ" data-organ="pancreas" tabindex="0" role="button" aria-label="Pancreas"><path d="M195,345 C215,335 260,332 285,330 C293,330 293,341 285,343 C255,349 220,356 198,357 C190,356 189,348 195,345 Z" fill="#ecc76d" stroke="#b8963f" stroke-width="1.5"/></g>
+  <!-- stomach -->
+  <g class="organ" data-organ="stomach" tabindex="0" role="button" aria-label="Stomach"><path d="M206,246 C238,230 292,238 295,276 C298,322 262,346 226,340 C206,337 194,328 188,318 C186,312 196,310 200,314 C212,322 240,322 252,300 C258,285 245,268 222,266 Z" fill="#e79a9a" stroke="#b86868" stroke-width="2"/></g>
+  <!-- esophagus & pharynx -->
+  <g class="organ" data-organ="esophagus" tabindex="0" role="button" aria-label="Esophagus"><path d="M200,135 C200,170 205,210 212,250" fill="none" stroke="#e29090" stroke-width="11" stroke-linecap="round"/></g>
+  <g class="organ" data-organ="pharynx" tabindex="0" role="button" aria-label="Pharynx"><path d="M200,104 L200,136" fill="none" stroke="#d97f7f" stroke-width="16" stroke-linecap="round"/></g>
+  <!-- liver & gallbladder -->
+  <g class="organ" data-organ="liver" tabindex="0" role="button" aria-label="Liver"><path d="M110,250 C110,225 170,214 226,227 C242,231 240,246 226,256 C200,276 160,300 125,296 C110,292 107,270 110,250 Z" fill="#a24f3f" stroke="#7a3428" stroke-width="2"/></g>
+  <g class="organ" data-organ="gallbladder" tabindex="0" role="button" aria-label="Gallbladder"><ellipse cx="170" cy="300" rx="9" ry="13" fill="#6fa64a" stroke="#4b7a2f" stroke-width="1.5"/></g>
+  <!-- mouth & salivary -->
+  <g class="organ" data-organ="salivary" tabindex="0" role="button" aria-label="Salivary glands"><ellipse cx="166" cy="96" rx="9" ry="12" fill="#f0b9c9" stroke="#c4869a" stroke-width="1.5"/><ellipse cx="234" cy="96" rx="9" ry="12" fill="#f0b9c9" stroke="#c4869a" stroke-width="1.5"/><ellipse cx="186" cy="110" rx="7" ry="5" fill="#f0b9c9" stroke="#c4869a" stroke-width="1.5"/><ellipse cx="214" cy="110" rx="7" ry="5" fill="#f0b9c9" stroke="#c4869a" stroke-width="1.5"/></g>
+  <g class="organ" data-organ="mouth" tabindex="0" role="button" aria-label="Mouth"><path d="M178,86 Q200,80 222,86 Q220,104 200,106 Q180,104 178,86 Z" fill="#b5474b" stroke="#7d2b2f" stroke-width="2"/><path d="M182,88 L218,88" stroke="#fff" stroke-width="3"/><ellipse cx="200" cy="99" rx="10" ry="4" fill="#e3787c"/></g>
+  <g class="labels" style="display:none">${lab}</g>
+  ${STAGE_PATHS.map((d,i)=>`<path id="${prefix}P${i}" d="${d}" fill="none" stroke="none"/>`).join("")}
+  <circle id="${prefix}Bolus" r="8" cx="200" cy="95" fill="#c8853a" stroke="#fff" stroke-width="2" filter="url(#${prefix}sh)" style="display:none"/>
+</svg>`;
+}
+
+/* ---------------- NUTRIENT VISUALS ---------------- */
+function hex(x,y,c,op=1){const r=8,p=[];for(let i=0;i<6;i++){const a=Math.PI/3*i+Math.PI/6;p.push((x+r*Math.cos(a)).toFixed(1)+","+(y+r*Math.sin(a)).toFixed(1))}return `<polygon points="${p.join(" ")}" fill="${c}" stroke="#7a5d10" stroke-width="1" opacity="${op}"/>`}
+function groups(sizes,drawFn,op=1){let x=10,out="";sizes.forEach(n=>{for(let i=0;i<n;i++){if(i>0)out+=`<line x1="${x-10}" y1="17" x2="${x-6}" y2="17" stroke="#555" stroke-width="2" opacity="${op}"/>`;out+=drawFn(x,17,i,op);x+=17}x+=12});return out}
+const AA=["#2e3092","#3a9a3b","#b3261e","#7b4ea3","#d17b1f","#1f8a9e","#9c6b3a","#d14f86"];
+function carbSVG(s){
+  const sugar=(x,y,i,op)=>hex(x,y,"#f2cf5b",op);
+  let body;
+  if(s===0) body=groups([8],sugar);
+  else if(s===1) body=groups([5,2,1],sugar).replace(/$/,"");
+  else if(s===2) body=groups([2,2,2,2],sugar);
+  else if(s===3) body=groups([1,1,1,1,1,1,1,1],sugar);
+  else body=groups([1,1,1,1,1,1,1,1],sugar,.35)+arrow("blood");
+  return wrap(body);
+}
+function protSVG(s){
+  const aa=(x,y,i,op)=>`<circle cx="${x}" cy="${y}" r="7" fill="${AA[(x/17|0)%8]}" opacity="${op}"/>`;
+  let body;
+  if(s===0) body=groups([8],aa);
+  else if(s===1) body=groups([4,4],aa);
+  else if(s===2) body=groups([2,2,2,2],aa);
+  else if(s===3) body=groups([1,1,1,1,1,1,1,1],aa);
+  else body=groups([1,1,1,1,1,1,1,1],aa,.35)+arrow("blood");
+  return wrap(body);
+}
+function fatSVG(s){
+  let body="";
+  if(s===0) body=`<circle cx="30" cy="17" r="15" fill="#f5d76e" stroke="#c9a632"/>`;
+  else if(s===1){for(let i=0;i<9;i++)body+=`<circle cx="${12+i*16}" cy="${12+(i%2)*10}" r="5" fill="#f5d76e" stroke="#c9a632"/>`}
+  else { const op=s>=4?.35:1;
+    body=`<rect x="8" y="5" width="8" height="24" fill="#c9a632" opacity="${op}"/>`;
+    for(let i=0;i<3;i++){body+=`<polyline points="${30+i*40},10 ${36+i*40},24 ${42+i*40},10 ${48+i*40},24 ${54+i*40},10" fill="none" stroke="#d1a21f" stroke-width="3" opacity="${op}"/>`}
+    if(s>=4) body+=arrow("lymph");
+  }
+  return wrap(body);
+}
+function arrow(t){return `<text x="215" y="22" font-size="11" font-weight="700" fill="#3a9a3b" font-family="Montserrat,Arial">→ ${t}</text>`}
+function wrap(b){return `<svg viewBox="0 0 280 34" width="100%" style="max-width:300px">${b}</svg>`}
+const CARB_CAP=["Starch (long chain of glucose)","Starch partly broken into maltose and shorter chains","Maltose (2 glucose units) and lactose (milk sugar)","Single sugars: glucose (plus galactose from milk)","Absorbed into blood capillaries in the villi"];
+const PROT_CAP=["Protein (long chain of amino acids)","Polypeptides (shorter chains)","Peptides (very short chains)","Single amino acids","Absorbed into blood capillaries in the villi"];
+const FAT_CAP=["Large fat droplet","Bile emulsifies fat into tiny droplets","Fatty acids + glycerol","Fatty acids + glycerol","Absorbed into lacteals (lymph vessels) in the villi"];
+
+/* ---------------- JOURNEY STAGES ---------------- */
+const STAGES=[
+ {t:"Mouth",org:["mouth","salivary"],time:"Varies with how long you chew",color:"#c8853a",
+  proc:["Ingestion","Mechanical digestion","Chemical digestion"],enz:["Salivary amylase"],
+  txt:"Juan takes a spoonful. His incisors cut the chicken; his molars grind the rice. Saliva wets the food, and <strong>salivary amylase</strong> begins breaking <strong>starch</strong> into <strong>maltose</strong> and shorter starch chains. The tongue rolls the food into a <strong>bolus</strong>.",
+  tip:"Try it: chew plain rice slowly for a minute. It starts to taste slightly sweet as starch turns into sugar.",n:[1,0,0]},
+ {t:"Pharynx & Esophagus",org:["pharynx","esophagus"],time:"About 5–10 seconds for a swallow of food",color:"#c8853a",
+  proc:["Propulsion (swallowing)","Peristalsis"],enz:["Salivary amylase (still working inside the bolus)"],
+  txt:"Juan swallows. The <strong>epiglottis</strong> closes over the windpipe. Muscles of the <strong>esophagus</strong> squeeze in waves (<strong>peristalsis</strong>) to push the bolus down the 23–25 cm tube into the stomach. No new enzymes are added here.",
+  tip:"Peristalsis is like squeezing toothpaste from the back of the tube.",n:[1,0,0]},
+ {t:"Stomach",org:["stomach"],time:"About 2–5 hours",color:"#d9b85c",
+  proc:["Mechanical digestion (churning)","Chemical digestion","Storage"],enz:["Pepsin","Gastric lipase (minor)","Hydrochloric acid (not an enzyme)"],
+  txt:"Strong stomach muscles churn the bolus with <strong>gastric juice</strong>. <strong>Hydrochloric acid</strong> (pH about 1.5–3.5) helps kill germs and activates <strong>pepsin</strong>, which starts breaking the chicken's <strong>proteins</strong> into <strong>polypeptides</strong>. As acid mixes in, it stops salivary amylase. A little fat digestion also begins (gastric lipase), but most fat is digested later. The food becomes a soupy <strong>chyme</strong>.",
+  tip:"Mucus coats the stomach wall so the acid does not digest the stomach itself.",n:[1,1,0]},
+ {t:"Duodenum",org:["smallint","liver","gallbladder","pancreas"],time:"Chyme enters a little at a time",color:"#e3c56b",
+  proc:["Chemical digestion","Mechanical digestion (emulsification)"],enz:["Pancreatic amylase","Trypsin","Pancreatic lipase","Bile (not an enzyme)"],
+  txt:"Chyme enters the first part of the small intestine. The <strong>gallbladder</strong> releases <strong>bile</strong> (made by the <strong>liver</strong>), which breaks the adobo's fat into tiny droplets. The <strong>pancreas</strong> adds bicarbonate to neutralize the acid, plus <strong>amylase</strong> (starch → maltose), <strong>trypsin</strong> (proteins → peptides), and <strong>lipase</strong> (fats → fatty acids + glycerol).",
+  tip:"This is where digestion of all three main nutrients happens at the same time.",n:[2,2,2]},
+ {t:"Jejunum & Ileum",org:["smallint"],time:"About 2–6 hours for the whole small intestine",color:"#e8d48a",
+  proc:["Chemical digestion (final step)","Absorption","Propulsion"],enz:["Maltase","Lactase","Sucrase","Peptidases"],
+  txt:"Enzymes on the intestine lining finish the job: <strong>maltase</strong> turns maltose into glucose, <strong>lactase</strong> splits the milk's lactose into glucose and galactose, and <strong>peptidases</strong> release single <strong>amino acids</strong>. Millions of <strong>villi</strong> absorb these small molecules: sugars and amino acids enter the <strong>blood</strong>; fatty acids and glycerol enter the <strong>lacteals</strong> (lymph).",
+  tip:"Assimilation: the blood carries glucose to Juan's cells for energy, and amino acids for building and repairing muscle.",n:[4,4,4]},
+ {t:"Large intestine",org:["largeint","appendix"],time:"About 10–59 hours (varies a lot between people)",color:"#9a6a45",
+  proc:["Absorption (water and minerals)","Propulsion","Forms feces"],enz:["No major digestive enzymes; gut bacteria help"],
+  txt:"What is left is mostly water, fiber, and undigested material. The <strong>large intestine</strong> absorbs most of the remaining <strong>water and minerals</strong>. Gut <strong>bacteria</strong> ferment some fiber and make vitamin K and some B vitamins. The leftovers become semi-solid <strong>feces</strong>.",
+  tip:"Too little water or fiber in the diet can make feces hard (constipation).",n:[4,4,4]},
+ {t:"Rectum & Anus",org:["rectum","anus"],time:"Stored until elimination",color:"#7a4b2a",
+  proc:["Storage","Egestion (elimination)"],enz:["None"],
+  txt:"Feces are stored in the <strong>rectum</strong>. When it is full, nerves signal the brain. The <strong>anal sphincters</strong> relax and the feces leave through the <strong>anus</strong>. This is <strong>egestion</strong>. Juan's lunch is fully processed.",
+  tip:"From mouth to anus, the whole trip takes about 10–73 hours in healthy adults. It varies a lot from person to person.",n:[4,4,4]}
+];
+
+/* ---------------- TABS ---------------- */
+const tabs=[...document.querySelectorAll("nav button")];
+function showTab(id){
+  if(!document.getElementById(id)) id="overview";
+  tabs.forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===id));
+  document.querySelectorAll("section.tab").forEach(s=>s.classList.toggle("active",s.id===id));
+  if(id==="enzymes") drawLab();
+}
+tabs.forEach(b=>b.onclick=()=>{location.hash=b.dataset.tab;showTab(b.dataset.tab)});
+window.addEventListener("hashchange",()=>showTab(location.hash.slice(1)));
+
+/* ---------------- JOURNEY LOGIC ---------------- */
+document.getElementById("jDiagram").innerHTML=diagramSVG("j");
+const jSvg=document.getElementById("jSvg"), bolus=document.getElementById("jBolus");
+let stage=0, anim=null, playing=false, playTimer=null;
+const dots=document.getElementById("jDots");
+STAGES.forEach((s,i)=>{const b=document.createElement("button");b.textContent=(i+1)+". "+s.t;b.onclick=()=>{stopPlay();goStage(i)};dots.appendChild(b)});
+function goStage(i){
+  stage=i;
+  [...dots.children].forEach((b,k)=>b.classList.toggle("on",k===i));
+  const s=STAGES[i];
+  jSvg.classList.add("dim");
+  jSvg.querySelectorAll(".organ").forEach(o=>o.classList.toggle("hl",s.org.includes(o.dataset.organ)));
+  document.getElementById("jCard").innerHTML=`
+   <div class="tag">Stage ${i+1} of ${STAGES.length}</div>
+   <h3 style="margin-top:0">${s.t}</h3>
+   <div class="meta">⏱ ${s.time}</div>
+   <p>${s.txt}</p>
+   <div><strong style="font-size:13px">Processes:</strong><div class="chips">${s.proc.map(p=>`<span class="chip p">${p}</span>`).join("")}</div></div>
+   <div><strong style="font-size:13px">Enzymes & secretions:</strong><div class="chips">${s.enz.map(p=>`<span class="chip ${/not an enzyme|None|No major/.test(p)?"s":"e"}">${p}</span>`).join("")}</div></div>
+   <h3>What has happened to the food so far</h3>
+   <div class="nut">
+     <div class="lbl">Carbohydrates<br><span class="meta">rice, milk sugar</span></div><div>${carbSVG(s.n[0])}</div><div class="cap">${CARB_CAP[s.n[0]]}</div>
+     <div class="lbl">Proteins<br><span class="meta">chicken</span></div><div>${protSVG(s.n[1])}</div><div class="cap">${PROT_CAP[s.n[1]]}</div>
+     <div class="lbl">Fats<br><span class="meta">adobo oil</span></div><div>${fatSVG(s.n[2])}</div><div class="cap">${FAT_CAP[s.n[2]]}</div>
+   </div>
+   <div class="note">💡 ${s.tip}</div>`;
+  document.getElementById("jPrev").disabled=i===0;
+  document.getElementById("jNext").disabled=i===STAGES.length-1;
+  animateBolus(i);
+}
+function animateBolus(i){
+  cancelAnimationFrame(anim);
+  const p=document.getElementById("jP"+i), L=p.getTotalLength(), dur=i===0?2200:(i===4||i===5?4200:2600);
+  bolus.style.display="";bolus.setAttribute("fill",STAGES[i].color);
+  bolus.setAttribute("r",i>=5?7:8);
+  const t0=performance.now();
+  (function step(now){
+    let f=Math.min(1,(now-t0)/dur);
+    let pt;
+    if(i===0){const w=(Math.sin(f*Math.PI*8)+1)/2;pt=p.getPointAtLength(w*L)}
+    else pt=p.getPointAtLength(f*L);
+    bolus.setAttribute("cx",pt.x);bolus.setAttribute("cy",pt.y);
+    if(f<1) anim=requestAnimationFrame(step);
+  })(t0);
+}
+document.getElementById("jPrev").onclick=()=>{stopPlay();if(stage>0)goStage(stage-1)};
+document.getElementById("jNext").onclick=()=>{stopPlay();if(stage<STAGES.length-1)goStage(stage+1)};
+const playBtn=document.getElementById("jPlay");
+function stopPlay(){playing=false;clearInterval(playTimer);playBtn.textContent="▶ Play all"}
+playBtn.onclick=()=>{
+  if(playing){stopPlay();return}
+  playing=true;playBtn.textContent="❚❚ Pause";
+  if(stage===STAGES.length-1) goStage(0); else goStage(stage);
+  playTimer=setInterval(()=>{if(stage<STAGES.length-1)goStage(stage+1);else stopPlay()},7000);
+};
+goStage(0);
+
+/* ---------------- EXPLORER LOGIC ---------------- */
+document.getElementById("eDiagram").innerHTML=diagramSVG("e");
+const eSvg=document.getElementById("eSvg");
+function selectOrgan(id){
+  const o=ORGANS[id];
+  eSvg.querySelectorAll(".organ").forEach(g=>g.classList.toggle("sel",g.dataset.organ===id));
+  document.getElementById("eCard").innerHTML=`
+    <div class="tag">${o.tag||(o.type==="canal"?"Alimentary canal (food passes through)":"Accessory organ (food does not pass through)")}</div>
+    <h3 style="margin-top:0">${o.name}</h3>
+    <p>${o.func}</p>
+    <strong style="font-size:13px">Processes:</strong><div class="chips">${o.proc.map(p=>`<span class="chip p">${p}</span>`).join("")}</div>
+    <strong style="font-size:13px">Enzymes & secretions:</strong><div class="chips">${o.enz.map(p=>`<span class="chip ${/not an enzyme|None|No major/.test(p)?"s":"e"}">${p}</span>`).join("")}</div>
+    <div class="note">💡 ${o.fact}</div>`;
+}
+eSvg.querySelectorAll(".organ").forEach(g=>{
+  g.addEventListener("click",()=>selectOrgan(g.dataset.organ));
+  g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();selectOrgan(g.dataset.organ)}});
+});
+const lblBtn=document.getElementById("eLabels");
+lblBtn.onclick=()=>{const L=eSvg.querySelector(".labels");const on=L.style.display==="none";L.style.display=on?"":"none";lblBtn.textContent=on?"Hide labels":"Show labels"};
+document.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{
+  const f=b.dataset.filter;
+  if(f==="none"){eSvg.classList.remove("dim");return}
+  eSvg.classList.add("dim");
+  eSvg.querySelectorAll(".organ").forEach(g=>g.classList.toggle("hl",ORGANS[g.dataset.organ].type===f));
+});
+
+/* ---------------- ENZYME LAB ---------------- */
+const SUBS={starch:{n:"Starch (from rice)",c:"#e07b39",prod:"maltose"},maltose:{n:"Maltose",c:"#e0a039",prod:"glucose + glucose"},
+  sucrose:{n:"Sucrose (table sugar)",c:"#d6913b",prod:"glucose + fructose"},lactose:{n:"Lactose (milk sugar)",c:"#e8b04a",prod:"glucose + galactose"},
+  protein:{n:"Protein (from chicken)",c:"#c4553a",prod:"shorter chains (polypeptides/peptides)"},peptides:{n:"Peptides (short protein chains)",c:"#c96d4f",prod:"amino acids"},
+  fat:{n:"Fat (from adobo oil)",c:"#e3b52f",prod:"fatty acids + glycerol"}};
+const ENZ={
+  samy:{n:"Salivary amylase",fits:["starch"],ph:7,w:1.4,where:"the mouth (from salivary glands)"},
+  pep:{n:"Pepsin",fits:["protein"],ph:1.8,w:1.1,where:"the stomach"},
+  pamy:{n:"Pancreatic amylase",fits:["starch"],ph:7.5,w:1.4,where:"the small intestine (from the pancreas)"},
+  tryp:{n:"Trypsin",fits:["protein","peptides"],ph:8,w:1.3,where:"the small intestine (from the pancreas)"},
+  lip:{n:"Pancreatic lipase",fits:["fat"],ph:8,w:1.3,where:"the small intestine (from the pancreas)"},
+  pept:{n:"Peptidase",fits:["peptides"],ph:7.5,w:1.4,where:"the small intestine lining"},
+  malt:{n:"Maltase",fits:["maltose"],ph:6.5,w:1.4,where:"the small intestine lining"},
+  sucr:{n:"Sucrase",fits:["sucrose"],ph:6,w:1.4,where:"the small intestine lining"},
+  lact:{n:"Lactase",fits:["lactose"],ph:5.8,w:1.4,where:"the small intestine lining"}
+};
+const lSub=document.getElementById("lSub"),lEnz=document.getElementById("lEnz"),lPh=document.getElementById("lPh"),lT=document.getElementById("lT"),lBile=document.getElementById("lBile");
+lSub.innerHTML=Object.entries(SUBS).map(([k,v])=>`<option value="${k}">${v.n}</option>`).join("");
+lEnz.innerHTML=Object.entries(ENZ).map(([k,v])=>`<option value="${k}">${v.n}</option>`).join("");
+const PRESETS=[["Mouth: starch + salivary amylase","starch","samy",7,37,false],["Stomach: protein + pepsin","protein","pep",2,37,false],
+  ["Amylase in stomach acid","starch","samy",2,37,false],["Fat + lipase, no bile","fat","lip",8,37,false],["Fat + lipase + bile","fat","lip",8,37,true],
+  ["Wrong match: lactose + maltase","lactose","malt",6,37,false],["Too hot: 70 °C","starch","samy",7,70,false]];
+const pBox=document.getElementById("lPresets");
+PRESETS.forEach(p=>{const b=document.createElement("button");b.className="btn secondary";b.style.fontSize="12px";b.textContent=p[0];
+  b.onclick=()=>{lSub.value=p[1];lEnz.value=p[2];lPh.value=p[3];lT.value=p[4];lBile.checked=p[5];updLabels();runLab()};pBox.appendChild(b)});
+function updLabels(){document.getElementById("lPhV").textContent=(+lPh.value).toFixed(1);document.getElementById("lTV").textContent=lT.value+" °C"}
+[lPh,lT].forEach(x=>x.oninput=()=>{updLabels()});
+[lSub,lEnz,lPh,lT,lBile].forEach(x=>x.addEventListener("change",()=>{if(labRunning)runLab()}));
+updLabels();
+
+function tempFactor(T){if(T>=58)return 0;if(T<=37)return Math.max(0.05,Math.exp(-Math.pow((37-T)/20,2)));return Math.max(0,1-Math.pow((T-37)/21,2))}
+function computeRate(){
+  const s=lSub.value,e=ENZ[lEnz.value],ph=+lPh.value,T=+lT.value;
+  const match=e.fits.includes(s);
+  const fph=Math.exp(-Math.pow((ph-e.ph)/e.w,2));
+  const fT=tempFactor(T);
+  const fb=(s==="fat")?(lBile.checked?1:0.3):1;
+  return {match,fph,fT,fb,rate:match?fph*fT*fb:0,e,s,ph,T};
+}
+const cv=document.getElementById("lCanvas"),ctx=cv.getContext("2d");
+let parts=[],enzP=[],labRunning=false,labAnim=null,lastT=0,elapsed=0;
+function initParticles(){
+  parts=[];enzP=[];
+  for(let i=0;i<26;i++)parts.push({x:60+Math.random()*600,y:40+Math.random()*240,vx:(Math.random()-.5)*30,vy:(Math.random()-.5)*30,split:false,sep:0,a:Math.random()*6.28});
+  for(let i=0;i<6;i++)enzP.push({x:60+Math.random()*600,y:40+Math.random()*240,vx:(Math.random()-.5)*50,vy:(Math.random()-.5)*50,a:Math.random()*6.28});
+}
+function drawLab(){
+  const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle="#f3f8fc";ctx.fillRect(0,0,W,H);
+  const s=lSub.value, col=SUBS[s].c, isFat=s==="fat", bile=lBile.checked;
+  ctx.font="600 13px Montserrat, Arial";ctx.fillStyle="#6b6b70";
+  ctx.fillText(`Test tube · pH ${(+lPh.value).toFixed(1)} · ${lT.value} °C${isFat?(bile?" · bile added":" · no bile"):""}`,14,22);
+  parts.forEach(p=>{
+    ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a);
+    const r=isFat&&!bile&&!p.split?11:7;
+    if(!p.split){
+      ctx.fillStyle=col;ctx.strokeStyle="#7a3f12";ctx.lineWidth=1.2;
+      circ(-r,0,r);circ(r,0,r);
+      ctx.beginPath();ctx.moveTo(-2,0);ctx.lineTo(2,0);ctx.stroke();
+    }else{
+      ctx.fillStyle="#3a9a3b";ctx.strokeStyle="#22622a";
+      circ(-7-p.sep,0,6);circ(7+p.sep,0,6);
+    }
+    ctx.restore();
+  });
+  enzP.forEach(e=>{
+    ctx.save();ctx.translate(e.x,e.y);ctx.rotate(e.a);
+    ctx.fillStyle="#2e3092";ctx.beginPath();ctx.arc(0,0,13,0.55,Math.PI*2-0.55);ctx.lineTo(0,0);ctx.closePath();ctx.fill();
+    ctx.restore();
+  });
+  function circ(x,y,r){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();ctx.stroke()}
+}
+function stepLab(now){
+  const dt=Math.min(.05,(now-lastT)/1000);lastT=now;elapsed+=dt;
+  const R=computeRate(), W=cv.width,H=cv.height, speed=0.4+0.6*Math.max(0.05,R.fT===0?0.6:R.fT);
+  const move=o=>{o.x+=o.vx*dt*speed;o.y+=o.vy*dt*speed;if(o.x<20||o.x>W-20)o.vx*=-1;if(o.y<36||o.y>H-16)o.vy*=-1;o.a+=dt*.6};
+  parts.forEach(p=>{move(p);if(p.split&&p.sep<6)p.sep+=dt*8});
+  enzP.forEach(e=>{move(e);e.a+=dt*1.5});
+  // collisions -> split
+  enzP.forEach(e=>parts.forEach(p=>{if(!p.split&&Math.hypot(p.x-e.x,p.y-e.y)<24&&Math.random()<R.rate*0.5){p.split=true}}));
+  const done=parts.filter(p=>p.split).length/parts.length;
+  document.getElementById("lProg").style.width=(done*100).toFixed(0)+"%";
+  document.getElementById("lProgV").textContent=(done*100).toFixed(0)+"%";
+  drawLab();
+  if(elapsed<20&&done<1)labAnim=requestAnimationFrame(stepLab);else labRunning=false;
+}
+function runLab(){
+  cancelAnimationFrame(labAnim);initParticles();elapsed=0;labRunning=true;lastT=performance.now();
+  const R=computeRate();
+  document.getElementById("lRate").style.width=(R.rate*100).toFixed(0)+"%";
+  document.getElementById("lRateV").textContent=(R.rate*100).toFixed(0)+"% of maximum";
+  document.getElementById("lResult").outerHTML=resultHTML(R);
+  labAnim=requestAnimationFrame(stepLab);
+}
+function resultHTML(R){
+  const e=R.e, sub=SUBS[R.s];
+  let cls,msg=[];
+  if(!R.match){
+    cls="bad";
+    const fits=e.fits.map(f=>SUBS[f].n.split(" (")[0].toLowerCase()).join(" and ");
+    msg.push(`<strong>No reaction.</strong> ${e.n} only fits ${fits}. Enzymes are <strong>specific</strong>: like a key in a lock, an enzyme's active site matches only certain molecules.`);
+    const right=Object.values(ENZ).filter(x=>x.fits.includes(R.s)).map(x=>x.n).join(" or ");
+    msg.push(`To break down ${sub.n.split(" (")[0].toLowerCase()}, try <strong>${right}</strong>.`);
+  }else{
+    if(R.rate>0.7){cls="ok";msg.push(`<strong>Fast reaction!</strong> ${e.n} breaks ${sub.n.split(" (")[0].toLowerCase()} into <strong>${sub.prod}</strong>.`)}
+    else if(R.rate>0.15){cls="mid";msg.push(`<strong>Slow reaction.</strong> ${e.n} fits ${sub.n.split(" (")[0].toLowerCase()}, but the conditions are not ideal.`)}
+    else {cls="bad";msg.push(`<strong>Almost no reaction.</strong> The enzyme matches, but the conditions stop it from working.`)}
+    if(R.fph<0.6) msg.push(`pH: ${e.n} works best near pH ${e.ph}. At pH ${R.ph.toFixed(1)} its shape changes, so it fits the food molecule poorly.${e.n==="Salivary amylase"&&R.ph<4?" This is why salivary amylase stops working once food reaches the acidic stomach.":""}`);
+    if(R.T>=58) msg.push(`Temperature: at ${R.T} °C the enzyme is <strong>denatured</strong>; its shape is permanently damaged and it cannot work, even if cooled again.`);
+    else if(R.T>42) msg.push(`Temperature: above body temperature the enzyme starts to lose its shape, so the reaction slows down.`);
+    else if(R.T<25) msg.push(`Temperature: molecules move slowly when cold, so they meet less often and the reaction is slow (the enzyme is not destroyed).`);
+    if(R.s==="fat"&&!lBile.checked) msg.push(`Bile: without bile, fat stays in big droplets and lipase can only reach the surface. Add bile to emulsify the fat.`);
+  }
+  msg.push(`<span class="meta">In the body, ${e.n.toLowerCase()} works in ${e.where}.</span>`);
+  return `<div class="result ${cls}" id="lResult">${msg.map(m=>`<p style="margin:4px 0">${m}</p>`).join("")}</div>`;
+}
+document.getElementById("lRun").onclick=runLab;
+document.getElementById("lReset").onclick=()=>{cancelAnimationFrame(labAnim);labRunning=false;initParticles();drawLab();
+  document.getElementById("lRate").style.width="0";document.getElementById("lRateV").textContent="—";
+  document.getElementById("lProg").style.width="0";document.getElementById("lProgV").textContent="0%";
+  document.getElementById("lResult").outerHTML=`<div class="result" id="lResult">Choose a substrate and an enzyme, then run the reaction.</div>`};
+lSub.addEventListener("change",()=>{if(!labRunning)drawLab()});lBile.addEventListener("change",()=>{if(!labRunning)drawLab()});
+initParticles();
+
+/* ---------------- QUIZ ---------------- */
+const QS=[
+ ["Which enzyme starts the chemical digestion of starch in the mouth?",["Pepsin","Salivary amylase","Lipase","Trypsin"],1,"Salivary amylase, from the salivary glands, starts breaking starch into maltose while you chew."],
+ ["In which organ does the chemical digestion of protein begin?",["Mouth","Stomach","Large intestine","Esophagus"],1,"Pepsin in the stomach starts breaking proteins into polypeptides. Saliva has no protein-digesting enzyme."],
+ ["How does bile help in fat digestion?",["It breaks fat molecules into fatty acids and glycerol","It breaks big fat droplets into tiny droplets (emulsification)","It absorbs fat into the blood","It is the enzyme that digests fat"],1,"Bile is not an enzyme. It emulsifies fat, giving lipase more surface area. Lipase does the chemical breakdown."],
+ ["Which organ makes bile?",["Gallbladder","Pancreas","Liver","Stomach"],2,"The liver makes bile. The gallbladder only stores and concentrates it."],
+ ["Where does most absorption of digested nutrients happen?",["Stomach","Small intestine","Large intestine","Esophagus"],1,"The small intestine's villi and microvilli give a huge surface area for absorbing nutrients."],
+ ["What is peristalsis?",["Chewing food into small pieces","Waves of muscle contraction that push food along","The action of enzymes on food","Absorption of water"],1,"Peristalsis moves food through the esophagus, stomach, and intestines."],
+ ["Why does salivary amylase stop working once food reaches the stomach?",["There is no more starch","The stomach is too cold","The stomach acid (low pH) changes the enzyme's shape","Bile destroys it"],2,"Salivary amylase works best near pH 7. Stomach acid (pH ≈ 1.5–3.5) changes its shape, so it stops working."],
+ ["What is the main job of the large intestine?",["Digest proteins","Absorb water and minerals and form feces","Make bile","Produce digestive enzymes"],1,"By the time food reaches the large intestine, most nutrients have been absorbed; it mainly absorbs water and minerals."],
+ ["Which is an example of MECHANICAL digestion?",["Pepsin breaking proteins","Molars grinding rice","Lactase splitting lactose","Lipase breaking down fat"],1,"Mechanical digestion changes only the size of food pieces. The others change molecules (chemical digestion)."],
+ ["Proteins are finally broken down into…",["Glucose","Fatty acids","Amino acids","Glycerol"],2,"Proteins are chains of amino acids. Pepsin, trypsin, and peptidases break them down step by step."],
+ ["Lactase breaks down lactose (milk sugar) into…",["Glucose and galactose","Glucose and fructose","Two glucose molecules","Amino acids"],0,"Lactose → glucose + galactose. (Sucrose → glucose + fructose; maltose → glucose + glucose.)"],
+ ["Why does the pancreas release bicarbonate into the small intestine?",["To digest starch","To neutralize stomach acid so intestinal enzymes can work","To emulsify fat","To kill bacteria"],1,"Pancreatic and intestinal enzymes work best at about pH 7–8, so the acid from the stomach must be neutralized."]
+];
+const qList=document.getElementById("qList");let answered=0,correct=0;
+function buildQuiz(){
+  qList.innerHTML="";answered=0;correct=0;document.getElementById("qScore").style.display="none";
+  QS.forEach((q,i)=>{
+    const d=document.createElement("div");d.className="q card";
+    d.innerHTML=`<strong>${i+1}. ${q[0]}</strong><div class="opts">${q[1].map((o,k)=>`<button data-k="${k}">${String.fromCharCode(65+k)}. ${o}</button>`).join("")}</div><div class="fb"></div>`;
+    d.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+      if(d.dataset.done)return;d.dataset.done=1;answered++;
+      const k=+b.dataset.k, ok=k===q[2]; if(ok)correct++;
+      d.querySelectorAll("button").forEach(x=>{x.disabled=true;if(+x.dataset.k===q[2])x.classList.add("right")});
+      if(!ok)b.classList.add("wrong");
+      d.querySelector(".fb").innerHTML=(ok?"<strong style='color:#256b26'>Correct.</strong> ":"<strong style='color:#b3261e'>Not quite.</strong> ")+q[3];
+      if(answered===QS.length)showScore();
+    });
+    qList.appendChild(d);
+  });
+}
+function showScore(){
+  const s=document.getElementById("qScore");s.style.display="";
+  const pct=Math.round(correct/QS.length*100);
+  s.innerHTML=`<div class="score">Your score: ${correct} / ${QS.length} (${pct}%)</div>
+   <p>${pct>=85?"Excellent! You can trace food through the digestive system and explain the role of enzymes.":pct>=60?"Good work. Review the Food Journey and Enzyme Lab for the questions you missed.":"Go back through the Food Journey stage by stage, then try again."}</p>
+   <button class="btn" id="qRetry">Try again</button>`;
+  document.getElementById("qRetry").onclick=()=>{buildQuiz();window.scrollTo(0,document.getElementById("quiz").offsetTop-60)};
+}
+buildQuiz();
+
+showTab(location.hash.slice(1)||"overview");
+</script>
+</body>
+</html>
